@@ -10,4 +10,4 @@ EPOCHS = 10
 ACCUMULATION = 2
 BERT_PATH = 'bert-base-uncased'
 MODEL_PATH = "model.bin"
-tokenizer  = transformers.BertTokenizer.from_pretrained(BERT_PATH, do_lower_case=True)
+TOKENIZER  = transformers.BertTokenizer.from_pretrained(BERT_PATH, do_lower_case=True)

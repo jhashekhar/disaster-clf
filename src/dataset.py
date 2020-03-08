@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 
 
+
 import torch
 from torch.utils.data import Dataset
 
@@ -17,6 +18,10 @@ class DisasterDataset(Dataset):
         self.df = pd.read_csv(csv_file)
         self.transforms = transforms
 
+
+        self.tokenizer = config.TOKENIZER
+        self.max_len = config.MAX_LEN
+
     def __len__(self):
         return len(self.df)
 
@@ -26,8 +31,19 @@ class DisasterDataset(Dataset):
 
         tweets = self.df.loc[idx, 'text'].values
         targets = self.df.loc[idx, 'target'].values
-        sample = {'tweets': tweets, 'targets': targets}
-        return sample
+
+        inputs = self.tokenizer.encode_plus(
+            tweets, 
+            None,
+            add_special_tokens=True,
+            max_length=self.max_len
+        )
+
+        ids = inputs['input_ids']
+        mask = inputs['attention_mask']
+        token_type_ids = inputs['token_type_ids']
+    
+        return {'ids': ids, 'mask': mask, 'token_type_ids': token_type_ids}
 
 
 class Transforms(object):
