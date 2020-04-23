@@ -1,12 +1,14 @@
-import config
-import transformers
+from transformers import BertModel
+from transformers import RobertaModel
 import torch.nn as nn
 
+import config
+
 class BERTBaseUncased(nn.Module):
-    def __init__(self):
+    def __init__(self, dropout):
         super(BERTBaseUncased, self).__init__()
-        self.bert = transformers.BertModel.from_pretrained(config.BERT_PATH)
-        self.bert_drop = nn.Dropout(0.3)
+        self.bert = BertModel.from_pretrained(config.BERT_PATH)
+        self.bert_drop = nn.Dropout(dropout)
         self.out = nn.Linear(768, 1)  # 1 for binary classifier, can use more than 1 need different loss function
 
 
@@ -23,3 +25,10 @@ class BERTBaseUncased(nn.Module):
         return output
 
         
+class RobertaModel(nn.Module):
+    def __init__(self, dropout):
+        super(RobertaModel, self).__init__()
+        self.roberta = RobertaModel.from_pretrained(config.ROBERTA_PATH)
+        
+    def forward(self):
+        return
