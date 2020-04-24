@@ -2,9 +2,7 @@ import re
 
 import string
 from spellchecker import SpellChecker
-
 from contractions import contractions
-
 
 
 def remove_space(text):
