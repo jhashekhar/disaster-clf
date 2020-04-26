@@ -19,7 +19,15 @@ PATHS = {
 
 # tokenizer paths
 TOKENIZER = {
-    'bert': BertTokenizer.from_pretrained(PATHS['bert'], do_lower_case=True),
-    'roberta': RobertaTokenizer.from_pretrained(PATHS['roberta'], do_lower_case=True),
-    'xlnet': XLNetTokenizer.from_pretrained(PATHS['xlnet'], do_lower_case=True)
+    'bert': BertTokenizer.from_pretrained(
+                            PATHS['bert'],
+                            do_lower_case=True),
+
+    'roberta': RobertaTokenizer.from_pretrained(
+                            PATHS['roberta'],
+                            do_lower_case=True),
+
+    'xlnet': XLNetTokenizer.from_pretrained(
+                            PATHS['xlnet'],
+                            do_lower_case=True)
             }
