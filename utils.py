@@ -24,7 +24,7 @@ def remove_url(text):
     return url.sub(r'', text)
 
 
-def remove_contractions(text, contractions):
+def remove_contractions(text, contraction):
     for word in contractions.keys():
         if "" + word + "" in text:
             text = text.replace("" + word + "", "" + contractions[word] + "")
@@ -45,14 +45,3 @@ def correct_spellings(text):
             corrected_text.append(word)
 
     return " ".join(corrected_text)
-
-
-
-
-
-#text = "You've been through how'll be there."
-#print(remove_contractions(text.lower(), contractions))
-#print(correct_spellings('There is somehing crazy about rher'))
-#print(remove_punct("I love India! #IndiaMeriJaannnn ##Sunday"))
-
-

@@ -1,16 +1,14 @@
-import numpy as np 
 import pandas as pd
-
-import argparse
-import sys
-sys.path.insert(0, '/content/src')
-
 import torch
+import argparse
+
+import sys
+sys.path.insert(0, '/Users/xanthate/GitHub/disaster-clf/src')
 
 import config
 from train import train_fn, eval_fn
 from dataset import DisasterDataset
-from model import BERTBaseUncased
+from model import Model
 
 
 # add arguments
@@ -21,11 +19,11 @@ from model import BERTBaseUncased
 parser = argparse.ArgumentParser(description='arguments for training and inference')
 
 parser.add_argument("-file_path", type=str, help="file path")
-#parser.add_argument("-mode", typt=str, help="'train', 'eval'")
+# parser.add_argument("-mode", typt=str, help="'train', 'eval'")
 parser.add_argument("-epochs", type=int, help="Number of epochs")
 parser.add_argument("-lr", type=float, help="learning rate")
 parser.add_argument("-model", type=str, help="'bert', 'roberta', 'xlnet'")
-#parser.add_argument("-device", type=str, help="gpu, tpu, cpu")
+# parser.add_argument("-device", type=str, help="gpu, tpu, cpu")
 parser.add_argument("-bs", type=int, help="batch size")
 
 
@@ -43,14 +41,25 @@ valid = df[t:]
 trainset = DisasterDataset(train.text.values, train.target.values, args.model)
 validset = DisasterDataset(valid.text.values, valid.target.values, args.model)
 
-trainloader = torch.utils.data.DataLoader(trainset, batch_size=config.TRAIN_BATCH_SIZE, shuffle=True)
-validloader = torch.utils.data.DataLoader(validset, batch_size=config.VALID_BATCH_SIZE, shuffle=False)
+trainloader = torch.utils.data.DataLoader(trainset,
+                                          batch_size=config.TRAIN_BATCH_SIZE,
+                                          shuffle=True)
+
+validloader = torch.utils.data.DataLoader(validset,
+                                          batch_size=config.VALID_BATCH_SIZE,
+                                          shuffle=False)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
-model = BERTBaseUncased(dropout=0.3).to(device)
+
+if args.model == 'xlnet':
+    model = Model[args.model](dropout=0.3, max_len=config.MAX_LEN).to(device)
+
+if args.model == 'bert':
+    model = Model[args.model](dropout=0.3).to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
 criterion = torch.nn.CrossEntropyLoss()
+
 
 def run():
     for epoch in range(args.epochs):
