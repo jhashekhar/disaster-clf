@@ -1,6 +1,3 @@
-import numpy as np
-import pandas as pd
-
 import torch
 import torch.nn as nn
 
@@ -15,7 +12,7 @@ class DisasterDataset(object):
 
         self.text = text
         self.target = target
-        self.transforms = transforms        
+        self.transforms = transforms
         self.tokenizer = config.TOKENIZER[tokenizer]
         self.max_len = config.MAX_LEN
 
@@ -37,20 +34,20 @@ class DisasterDataset(object):
         ids = inputs['input_ids']
         mask = inputs['attention_mask']
         token_type_ids = inputs['token_type_ids']
-    
+
         # add padding
         padding_len = self.max_len - len(ids)
         ids = ids + [0] * padding_len
         mask = mask + [0] * padding_len
         token_type_ids = token_type_ids + [0] * padding_len
-        
+    
         return {
             'ids': torch.tensor(ids, dtype=torch.long), 
             'mask': torch.tensor(mask, dtype=torch.long), 
             'token_type_ids': torch.tensor(token_type_ids, dtype=torch.long),
             'targets': torch.tensor(target, dtype=torch.long)
-               }
-               
+               }   
+
 
 class Transforms(object):
     def __init__(self, embedding=None, vector_size=None, hidden_dim=None):

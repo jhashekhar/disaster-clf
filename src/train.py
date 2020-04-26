@@ -14,12 +14,15 @@ def train_fn(dataloader, model, criterion, optimizer, device, scheduler=None, ac
 
         model.zero_grad()
         output = model(ids)
-        #print(output.size(), targets.size())
+        #o1, o2 = model(ids)
+        #print(len(output))
+        #print(output.size())
+        #print(o1.size(), o2.size())
         loss = criterion(output, targets)
         epoch_loss.append(loss.item())
         loss.backward()
         optimizer.step()
-
+    
     return sum(epoch_loss)/len(epoch_loss)
 
 
