@@ -40,7 +40,7 @@ class DisasterDataset(object):
         ids = ids + [0] * padding_len
         mask = mask + [0] * padding_len
         token_type_ids = token_type_ids + [0] * padding_len
-    
+  
         return {
             'ids': torch.tensor(ids, dtype=torch.long), 
             'mask': torch.tensor(mask, dtype=torch.long), 
