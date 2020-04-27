@@ -1,12 +1,15 @@
-from transformers import BertModel, RobertaModel, XLNetModel
+from transformers import BertModel
+from transformers import RobertaModel
+from transformers import XLNetModel
+from transformers import DistilBertModel
 
 import torch.nn as nn
 import config
 
 
-class BERTBaseUncased(nn.Module):
+class BERTModel(nn.Module):
     def __init__(self, dropout):
-        super(BERTBaseUncased, self).__init__()
+        super(BERTModel, self).__init__()
         self.bert = BertModel.from_pretrained(config.PATHS['bert'])
         self.dropout = nn.Dropout(dropout)
         self.fc = nn.Linear(768, 2)
@@ -17,22 +20,34 @@ class BERTBaseUncased(nn.Module):
         output = self.fc(bo)
         return output
 
-      
+
 class ROBERTAModel(nn.Module):
     def __init__(self, dropout):
         super(ROBERTAModel, self).__init__()
         self.roberta = RobertaModel.from_pretrained(config.PATHS['roberta'])
-        self.fc = nn.Linear(768, 1)
+        self.fc = nn.Linear(768, 2)
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, ids, mask, token_type_ids):
-        hidden_state, scores = self.roberta(
-            ids,
-            attention_mask = mask,
-            token_type_ids = token_type_ids
-        )
+        roberta_out = self.roberta(ids)
+        out = self.dropout(roberta_out)
+        out = self.fc(out)
+        return out
 
-        return hidden_state, scores
+
+class DISTILBertModel(nn.Module):
+    def __init__(self, dropout):
+        super(DISTILBertModel, self).__init__()
+        self.distilbert = DistilBertModel.from_pretrained(
+                                        config.PATHS['distilbert'])
+        self.fc = nn.Linear(768, 2)
+        self.dropout = nn.Dropout(dropout)
+
+    def forward(self, ids):
+        output = self.distilbert(ids)
+        distil_out = self.dropout(output[1])
+        out = self.fc(distil_out)
+        return out
 
 
 class XLNETModel(nn.Module):
@@ -43,15 +58,15 @@ class XLNETModel(nn.Module):
         self.dropout = nn.Dropout(dropout)
 
     def forward(self, ids):
-        out = self.xlnet(ids)
-        out = self.dropout(out[0])
-        xl_out = out.reshape(out.size(0), -1)
-        fc_out = self.fc(xl_out)
-        return fc_out
+        xlnet_out = self.xlnet(ids)
+        out = self.dropout(xlnet_out[0])
+        out = out.reshape(out.size(0), -1)
+        out = self.fc(out)
+        return out
 
 
 Model = {
-    'bert': BERTBaseUncased,
+    'bert': BERTModel,
     'roberta': ROBERTAModel,
-    'xlnet': XLNETModel
-}
+    'xlnet': XLNETModel,
+    'distilbert': DISTILBertModel}
