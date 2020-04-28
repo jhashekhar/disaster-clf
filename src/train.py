@@ -35,9 +35,15 @@ def train(
     return sum(epoch_loss)/len(epoch_loss)
 
 
-def eval(dataloader, model, criterion, device):
+def eval(
+        dataloader,
+        model,
+        criterion,
+        device):
+
     model.eval()
     epoch_loss = []
+
     with torch.no_grad():
         for i, data in tqdm(enumerate(dataloader), total=len(dataloader)):
             ids = data['ids'].to(device)

@@ -82,6 +82,10 @@ if args.scheduler == 'multisteplr':
     scheduler = config.scheduler['multisteplr'](optimizer, config.MILESTONES)
 
 
+def save_checkpoint(model, PATH):
+    torch.save(model, PATH)
+
+
 def run():
     for epoch in range(args.epochs):
         if args.scheduler:
