@@ -16,17 +16,46 @@ parser = argparse.ArgumentParser(
     description='arguments for training and inference')
 
 parser.add_argument(
-    "-file_path", type=str, help="file path")
+    "-file_path",
+    type=str,
+    help="file path")
+
 parser.add_argument(
-    "-epochs", type=int, help="Number of epochs")
+    "-epochs",
+    type=int,
+    help="Number of epochs")
+
 parser.add_argument(
-    "-model", type=str, help="'bert', 'roberta', 'distilbert', 'xlnet'")
+    "-model",
+    type=str,
+    help="'bert', 'roberta', 'distilbert', 'xlnet'")
+
 parser.add_argument(
-    "-optimizer", type=str, help="'Adam' and 'AdamW' ")
+    "-optimizer",
+    type=str,
+    help="'Adam' and 'AdamW' ")
+
 parser.add_argument(
-    "-scheduler", type=str, help="'StepLR' and 'MultiStepLR'")
+    "-learning_rate",
+    type=float,
+    default=0.002,
+    help="learning rate for Adam optimizer or AdamW optimizer")
+
 parser.add_argument(
-    "-bs", type=int, help="batch size")
+    "-scheduler",
+    type=str,
+    help="'steplr': StepLR' and 'multisteplr': MultiStepLR'")
+
+parser.add_argument(
+    "-batch_size",
+    type=int,
+    help="batch size")
+
+parser.add_argument(
+    "-accumulation_step",
+    type=int,
+    default=8,
+    help="Gradient accumulation steps")
 
 
 args = parser.parse_args()
@@ -52,12 +81,12 @@ validset = DisasterDataset(
 
 trainloader = torch.utils.data.DataLoader(
                                 trainset,
-                                batch_size=config.TRAIN_BATCH_SIZE,
+                                batch_size=args.batch_size,
                                 shuffle=True)
 
 validloader = torch.utils.data.DataLoader(
                                 validset,
-                                batch_size=config.VALID_BATCH_SIZE,
+                                batch_size=args.batch_size,
                                 shuffle=False)
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -68,11 +97,15 @@ if args.model == 'xlnet':
 if args.model == 'bert':
     model = Model[args.model](dropout=0.3).to(device)
 
-else:
+if args.model == 'roberta':
     model = Model[args.model](dropout=0.3).to(device)
 
+if args.model == 'distilbert':
+    model = Model[args.model](dropout=0.3).to(device)
+
+
 criterion = config.loss
-optimizer = config.optimizer[args.optimizer](model.parameters(), config.LR)
+optimizer = config.optimizer[args.optimizer](model.parameters(), args.lr)
 
 
 if args.scheduler == 'steplr':
@@ -96,7 +129,7 @@ def run():
                 optimizer,
                 device,
                 scheduler=scheduler,
-                accumulation_step=config.ACCUMULATION)
+                accumulation_step=args.accumulation_step)
         else:
             train_loss = train(
                 trainloader,
@@ -104,7 +137,7 @@ def run():
                 criterion,
                 optimizer,
                 device,
-                accumulation_step=config.ACCUMULATION)
+                accumulation_step=args.accumulation_step)
 
         val_loss = eval(
             validloader,

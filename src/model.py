@@ -1,7 +1,13 @@
-from transformers import BertModel
-from transformers import RobertaModel
-from transformers import XLNetModel
-from transformers import DistilBertModel
+from transformers import (
+    BertConfig,
+    BertModel,
+    RobertaConfig,
+    RobertaModel,
+    DistilBertConfig,
+    DistilBertModel,
+    XLNetConfig,
+    XLNetModel,
+    )
 
 import torch.nn as nn
 import config
@@ -10,7 +16,11 @@ import config
 class BERTModel(nn.Module):
     def __init__(self, dropout):
         super(BERTModel, self).__init__()
-        self.bert = BertModel.from_pretrained(config.PATHS['bert'])
+
+        self.bert = BertModel.from_pretrained(
+            config.PATHS['bert'],
+            config=BertConfig())
+
         self.dropout = nn.Dropout(dropout)
         self.fc = nn.Linear(768, 2)
 
@@ -24,7 +34,11 @@ class BERTModel(nn.Module):
 class ROBERTAModel(nn.Module):
     def __init__(self, dropout):
         super(ROBERTAModel, self).__init__()
-        self.roberta = RobertaModel.from_pretrained(config.PATHS['roberta'])
+
+        self.roberta = RobertaModel.from_pretrained(
+            config.PATHS['roberta'],
+            config=RobertaConfig())
+
         self.fc = nn.Linear(768, 2)
         self.dropout = nn.Dropout(dropout)
 
@@ -38,8 +52,11 @@ class ROBERTAModel(nn.Module):
 class DISTILBertModel(nn.Module):
     def __init__(self, dropout):
         super(DISTILBertModel, self).__init__()
+
         self.distilbert = DistilBertModel.from_pretrained(
-                                        config.PATHS['distilbert'])
+            config.PATHS['distilbert'],
+            config=DistilBertConfig())
+
         self.fc = nn.Linear(768, 2)
         self.dropout = nn.Dropout(dropout)
 
@@ -53,7 +70,11 @@ class DISTILBertModel(nn.Module):
 class XLNETModel(nn.Module):
     def __init__(self, dropout, max_len=None):
         super(XLNETModel, self).__init__()
-        self.xlnet = XLNetModel.from_pretrained(config.PATHS['xlnet'])
+
+        self.xlnet = XLNetModel.from_pretrained(
+            config.PATHS['xlnet'],
+            config=XLNetConfig())
+
         self.fc = nn.Linear(768 * max_len, 2)
         self.dropout = nn.Dropout(dropout)
 
@@ -69,4 +90,5 @@ Model = {
     'bert': BERTModel,
     'roberta': ROBERTAModel,
     'xlnet': XLNETModel,
-    'distilbert': DISTILBertModel}
+    'distilbert': DISTILBertModel
+    }

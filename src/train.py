@@ -40,7 +40,7 @@ def eval(
         model,
         criterion,
         device):
-
+        
     model.eval()
     epoch_loss = []
 
